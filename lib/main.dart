@@ -1,4 +1,4 @@
-import 'package:firebase_auth_app/view/screen/auth/email/email_screen.dart';
+import 'package:firebase_auth_app/view/screen/auth/signup/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -18,9 +18,8 @@ class MyApp extends StatelessWidget {
 
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-
-      home:EmailScreen(),
-
+      color: Colors.amber,
+      home:SignUp(),
     );
   }
 }
