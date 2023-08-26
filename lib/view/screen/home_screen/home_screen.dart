@@ -1,8 +1,12 @@
+import 'package:firebase_auth_app/view/screen/auth/crud/crud_screen.dart';
 import 'package:firebase_auth_app/view/screen/auth/signin/signin.dart';
 import 'package:flutter/material.dart';
 
+import '../auth/user/user_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +14,11 @@ class HomeScreen extends StatelessWidget {
 appBar: AppBar(
   centerTitle: true,
   title: Text("Home",style: TextStyle(color: Colors.redAccent,fontSize: 50),),
-  leading: Icon(Icons.arrow_back),
+  leading: InkWell(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (_)=>UserScreen()));
+      },
+      child: const Icon(Icons.arrow_back)),
   actions: [
     Padding(
       padding: EdgeInsets.only(right: 18.0),
@@ -23,7 +31,14 @@ appBar: AppBar(
     )
   ],
 ),
-
+body: Center(
+  child: InkWell(
+    onTap: (){
+      Navigator.push(context, MaterialPageRoute(builder: (_)=>CrudScreen()));
+    },
+      splashColor: Colors.red,
+      child: Text("Crud")),
+),
     );
   }
 }

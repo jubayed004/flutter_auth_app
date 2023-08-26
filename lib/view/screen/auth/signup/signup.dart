@@ -4,9 +4,11 @@ import 'package:firebase_auth_app/view/screen/auth/signin/signin.dart';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../model/model.dart';
 import '../../home_screen/home_screen.dart';
+import '../googlelogin/googlelogin_Screen.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -22,6 +24,13 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _postCodeController = TextEditingController();
 
+  late GoogleSignInAccount? googleUser;
+  var googleSignIn = GoogleSignIn();
+
+  // bool isObscure = true;
+  // bool isLoading = false;
+  // bool rememberMe = false;
+  bool isClicked=false;
   final _formKey = GlobalKey<FormState>();
   final fireStore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
@@ -55,10 +64,91 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  bool isClicked=false;
+  //google sign in
+
+
+
+ //  Future<User?> signInWithGoogle() async {
+ //
+ //    try{
+ //      // Trigger the authentication flow
+ //      googleUser = await googleSignIn.signIn();
+ //
+ //      // Obtain the auth details from the request
+ //      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+ //
+ //      // Create a new credential
+ //      final credential = GoogleAuthProvider.credential(
+ //        accessToken: googleAuth?.accessToken,
+ //        idToken: googleAuth?.idToken,
+ //      );
+ //
+ //      final User? user = (await FirebaseAuth.instance.signInWithCredential(credential)).user;
+ //
+ //      UserModel userModel=UserModel();
+ //
+ //      userModel.email = user!.email;
+ //      userModel.uid = user.uid;
+ //      await fireStore.collection('users').doc(user!.uid).set({
+ //        'name' : user.displayName,
+ //        'email':user.email
+ //
+ //      });
+ //
+ //      // Once signed in, return the UserCredential
+ //      return user;
+ //    } catch(e){
+ //      print("Error Message: $e");
+ //    }
+ //  }
+ //  void handleGoogleLogin(context) async{
+ //    showDialog(
+ //      context: context,
+ //      barrierDismissible: false,
+ //      builder: (BuildContext context) {
+ //        return const Center(child: CircularProgressIndicator(color: Colors.green));
+ //      },
+ //    );
+ //
+ //    User? user = await signInWithGoogle();
+ //    if(user != null){
+ //      Navigator.push(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
+ //    }else{
+ //      Navigator.pop(context);
+ //    }
+ //
+ //  }
+ // signOut()async{
+ //    var result = await FirebaseAuth.instance.signOut();
+ //    return result;
+ // }
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        final UserCredential userCredential = await auth.signInWithCredential(credential);
+
+        if (userCredential.user != null) {
+          // Handle successful Google Sign-In
+          print("Google Sign-In successful: ${userCredential.user!.displayName}");
+          // Navigate to your desired screen or perform further actions
+        }
+      }
+    } catch (e) {
+      print("Google Sign-In Error: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(child: Scaffold(
+    return  SafeArea(
+        child: Scaffold(
+
       body:  LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) =>SingleChildScrollView(
             child: Padding(
@@ -67,7 +157,9 @@ class _SignUpState extends State<SignUp> {
               child: Column(
 
                   children: [
-                    const SizedBox(height: 108,),
+                    Text("Sigin Up Page",style: TextStyle(fontSize: 50,fontWeight: FontWeight.w900),),
+                    const SizedBox(height: 24
+                      ,),
 
                     Form(
                         key: _formKey,
@@ -310,7 +402,105 @@ class _SignUpState extends State<SignUp> {
                                     style: TextStyle(color: Color(0xffFFFFFF),fontSize: 18,fontWeight: FontWeight.w500),
                                   )),
 
-                            )
+                            ),
+                            SizedBox(height: 16,),
+
+                            InkWell(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context){
+                                  return Sign_in_screen();
+                                }));
+                              },
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Text("Login here",
+
+                                    style: TextStyle(color: Colors.red),),
+                              ),
+                            ),
+                            SizedBox( height: 24,),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: Container(
+                                height: 46,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFFFFFFFF),
+                                    border: Border.all(
+                                        width: 1, color: Color(0xFFE6E7F4)),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      InkWell(
+                                        onTap: ()async{
+                                          await _signInWithGoogle();
+                                          if(mounted){
+                                            Navigator.push(context, MaterialPageRoute(builder:(_)=>HomeScreen()));
+                                          }
+                                        },
+                                        child: Image.asset(
+                                          'assets/logos/google.png',
+                                          height: 30,
+                                          width: 30,
+                                        ),
+                                      ),
+                                      const  SizedBox(
+                                        width: 16,
+                                      ),
+                                      const  Text('Google',
+                                          style: TextStyle(
+                                              color: Color(0xff2E2C2C),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500))
+                                    ],
+                                  ),
+                                ),
+                              )),
+                          const  SizedBox(
+                            width: 16,
+                          ),
+                          Expanded(
+                              child: Container(
+                                height: 46,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    color:const Color(0xFFFFFFFF),
+                                    border: Border.all(
+                                        width: 1, color: Color(0xFFE6E7F4)),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      InkWell(
+                                        onTap: (){
+
+                                        },
+                                        child: Image.asset(
+                                          'assets/logos/apple.png',
+                                          height: 30,
+                                          width: 30,
+                                        ),
+                                      ),
+                                      const  SizedBox(
+                                        width: 16,
+                                      ),
+                                      const  Text('Apple',
+                                          style: TextStyle(
+                                              color: Color(0xff2E2C2C),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500))
+                                    ],
+                                  ),
+                                ),
+                              )),
+                        ],
+                      ),
                           ],
                         )
                     )]
@@ -320,9 +510,7 @@ class _SignUpState extends State<SignUp> {
       ),
     ));
   }
-
   postUserDetails() async{
-
     User? user = auth.currentUser;
     UserModel userModel = UserModel();
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_app/view/screen/auth/signup/signup.dart';
 import 'package:firebase_auth_app/view/screen/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -204,8 +205,15 @@ class _Sign_in_screenState extends State<Sign_in_screen> {
                                     'Sign In',
                                     style: TextStyle(color: Color(0xffFFFFFF),fontSize: 18,fontWeight: FontWeight.w500),
                                   )),
-
-                            )
+                            ),
+                            SizedBox(height: 16,),
+                            Align(
+                                alignment: Alignment.bottomRight,
+                                child: InkWell(
+                                    onTap: (){
+                                      Navigator.push(context,MaterialPageRoute(builder: (_)=>SignUp()));
+                                    },
+                                    child: const Text("Create Account Here",style: TextStyle(color: Colors.green,fontWeight: FontWeight.w500,fontSize: 18),)))
                           ],
                         )
                     )

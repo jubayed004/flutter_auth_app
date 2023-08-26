@@ -1,3 +1,4 @@
+
 class UserModel{
   String? name;
   String? email;
@@ -30,3 +31,4 @@ class UserModel{
     };
   }
 }
+
